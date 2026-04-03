@@ -53,18 +53,22 @@ app.get("/health", (_req, res) => {
   });
 });
 
-import path from "path";
-
-// Serve frontend in production
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
-  app.get("*", (_req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
-  });
-}
-
 // ─── API Routes ────────────────────────────────────────
 app.use("/api", routes);
+
+// ─── Frontend Static Files (production only) ──────────
+if (config.nodeEnv === "production") {
+  const frontendDist = path.join(__dirname, "../frontend/dist");
+  app.use(express.static(frontendDist));
+  // Fallback: serve React index.html for all non-API routes (client-side routing)
+  // Uses app.use middleware instead of app.get to avoid Express v5 path-to-regexp issues
+  app.use((req, res, next) => {
+    if (req.path.startsWith("/api") || req.path.startsWith("/api-docs") || req.path === "/health") {
+      return next();
+    }
+    res.sendFile(path.join(frontendDist, "index.html"));
+  });
+}
 
 // ─── 404 Handler ───────────────────────────────────────
 app.use(notFoundHandler);
