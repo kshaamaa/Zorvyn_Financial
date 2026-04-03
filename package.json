@@ -5,7 +5,7 @@
   "description": "Finance Data Processing and Access Control Backend - REST API with JWT auth, RBAC, and dashboard analytics",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "build": "tsc",
+    "build": "tsc && cd frontend && npm install && npm run build",
     "start": "node dist/server.js",
     "start:prod": "npx prisma migrate deploy && node dist/utils/seed.js && node dist/server.js",
     "seed": "ts-node src/utils/seed.ts",
