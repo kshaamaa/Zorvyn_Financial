@@ -1,8 +1,6 @@
 import { getToken, clearAuth } from "./storage";
 
-// In production (Vercel), set VITE_API_URL to your Render backend URL e.g. https://your-app.onrender.com
-// In development, leave unset — Vite's proxy handles /api/* -> localhost:3000
-const BASE_URL = (import.meta.env.VITE_API_URL ?? "") + "/api";
+const BASE_URL ="/api";
 
 interface RequestOptions {
   method?: string;
