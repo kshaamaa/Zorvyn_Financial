@@ -53,6 +53,16 @@ app.get("/health", (_req, res) => {
   });
 });
 
+import path from "path";
+
+// Serve frontend in production
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  app.get("*", (_req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+  });
+}
+
 // ─── API Routes ────────────────────────────────────────
 app.use("/api", routes);
 
