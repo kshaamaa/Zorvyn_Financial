@@ -1,0 +1,73 @@
+// Finance Data Processing - Prisma Schema
+// Database: SQLite for simplicity and zero-config setup
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── User Model ────────────────────────────────────────────
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("VIEWER") // VIEWER | ANALYST | ADMIN
+  status    String   @default("ACTIVE") // ACTIVE | INACTIVE
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime? // Soft delete
+
+  financialRecords FinancialRecord[]
+  auditLogs        AuditLog[]
+
+  @@index([email])
+  @@index([role])
+  @@index([status])
+  @@map("users")
+}
+
+// ─── Financial Record Model ────────────────────────────────
+model FinancialRecord {
+  id          String   @id @default(uuid())
+  amount      Float
+  type        String   // INCOME | EXPENSE
+  category    String   // e.g., Salary, Rent, Food, Utilities, Entertainment, etc.
+  date        DateTime
+  description String?
+  userId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime? // Soft delete
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([type])
+  @@index([category])
+  @@index([date])
+  @@index([deletedAt])
+  @@map("financial_records")
+}
+
+// ─── Audit Log Model ──────────────────────────────────────
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String   // CREATE | UPDATE | DELETE | LOGIN | etc.
+  entity    String   // User | FinancialRecord
+  entityId  String?
+  details   String?  // JSON string with change details
+  userId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
