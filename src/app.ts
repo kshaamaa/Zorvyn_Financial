@@ -56,6 +56,8 @@ app.get("/health", (_req, res) => {
 // ─── API Routes ────────────────────────────────────────
 app.use("/api", routes);
 
+
+import path from "path";
 // ─── Frontend Static Files (production only) ──────────
 if (config.nodeEnv === "production") {
   const frontendDist = path.join(__dirname, "../frontend/dist");
